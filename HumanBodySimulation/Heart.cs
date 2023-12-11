@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HumanBodySimulation;
+using System;
 using System.Collections.Generic;
 
 namespace HumanBodySimulation

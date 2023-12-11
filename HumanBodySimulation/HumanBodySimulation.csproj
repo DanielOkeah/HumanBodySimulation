@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Heart.cs" />
     <Compile Include="IOrgan.cs" />
     <Compile Include="Lung.cs" />
     <Compile Include="MainWindow.cs">
