@@ -27,6 +27,9 @@ namespace HumanBodySimulation
             // Add Organs here
             organs.Add(new Lung());
 
+            // Added the Heart here
+            organs.Add(new Heart()); 
+
             foreach(IOrgan organ in organs)
             {
                 organ.init(parameters);
