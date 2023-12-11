@@ -34,8 +34,8 @@ namespace HumanBodySimulation
     public class Heart : Organ, IHeart, IOrgan
     {
         // Existing properties
-        private double _heartRate;
-        private double _strokeVolume;
+        private double _heartRate = 70; // Default heart value
+        private double _strokeVolume = 70; // default stroke volume
         private double _lastBloodPumped;
 
         // New properties
@@ -46,8 +46,8 @@ namespace HumanBodySimulation
         public double MaxDiastolicPressure { get; set; }
         public double BiggestO2Desaturation { get; set; }
         public double AverageO2Desaturation { get; set; }
-        public double MaximumHR { get; set; }
-        public double MinimumHR { get; set; }
+        public double MaximumHR { get; set; } = 100; // default max HR value
+        public double MinimumHR { get; set; } = 60; // default min HR value
 
         // Existing methods
         public double HeartRate
@@ -82,9 +82,37 @@ namespace HumanBodySimulation
         public void init(Dictionary<string, string> parameters)
         {
             // Initialize heart parameters here
-            // Example: HeartRate = double.Parse(parameters["heartRate"]);
-            // Add other initializations as needed
+            if (parameters.TryGetValue("HeartRate", out var heartRate))
+                HeartRate = double.Parse(heartRate);
+
+            if (parameters.TryGetValue("AverageSPO2", out var averageSPO2))
+                AverageSPO2 = double.Parse(averageSPO2);
+
+            if (parameters.TryGetValue("MinSystolicPressure", out var minSystolicPressure))
+                MinSystolicPressure = double.Parse(minSystolicPressure);
+
+            if (parameters.TryGetValue("MaxSystolicPressure", out var maxSystolicPressure))
+                MaxSystolicPressure = double.Parse(maxSystolicPressure);
+
+            if (parameters.TryGetValue("MinDiastolicPressure", out var minDiastolicPressure))
+                MinDiastolicPressure = double.Parse(minDiastolicPressure);
+
+            if (parameters.TryGetValue("MaxDiastolicPressure", out var maxDiastolicPressure))
+                MaxDiastolicPressure = double.Parse(maxDiastolicPressure);
+
+            if (parameters.TryGetValue("BiggestO2Desaturation", out var biggestO2Desaturation))
+                BiggestO2Desaturation = double.Parse(biggestO2Desaturation);
+
+            if (parameters.TryGetValue("AverageO2Desaturation", out var averageO2Desaturation))
+                AverageO2Desaturation = double.Parse(averageO2Desaturation);
+
+            if (parameters.TryGetValue("MaximumHR", out var maximumHR))
+                MaximumHR = double.Parse(maximumHR);
+
+            if (parameters.TryGetValue("MinimumHR", out var minimumHR))
+                MinimumHR = double.Parse(minimumHR);
         }
+
 
         public void update(int n, Dictionary<string, string> parameters)
         {
