@@ -1,6 +1,6 @@
-﻿using HumanBodySimulation;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace HumanBodySimulation
 {
@@ -10,115 +10,106 @@ namespace HumanBodySimulation
         public abstract void Update(int n);
     }
 
-    // Define the interface for the heart
-    public interface IHeart
-    {
-        double HeartRate { get; set; }
-        double StrokeVolume { get; set; }
-        double AverageSPO2 { get; set; }
-        double MinSystolicPressure { get; set; }
-        double MaxSystolicPressure { get; set; }
-        double MinDiastolicPressure { get; set; }
-        double MaxDiastolicPressure { get; set; }
-        double BiggestO2Desaturation { get; set; }
-        double AverageO2Desaturation { get; set; }
-        double MaximumHR { get; set; }
-        double MinimumHR { get; set; }
-
-        double GetBloodPumped();
-        double GetHeartRateVariability();
-    }
-
-    
-
     // Implement the Heart class
-    public class Heart : Organ, IHeart, IOrgan
+    public class Heart : Organ, IOrgan
     {
-        // Existing properties
-        private double _heartRate = 70; // Default heart value
-        private double _strokeVolume = 70; // default stroke volume
+        // Properties as private fields
+        private double _heartRate = 70; // Default heart rate
+        private double _strokeVolume = 70; // Default stroke volume
         private double _lastBloodPumped;
-
-        // New properties
-        public double AverageSPO2 { get; set; }
-        public double MinSystolicPressure { get; set; }
-        public double MaxSystolicPressure { get; set; }
-        public double MinDiastolicPressure { get; set; }
-        public double MaxDiastolicPressure { get; set; }
-        public double BiggestO2Desaturation { get; set; }
-        public double AverageO2Desaturation { get; set; }
-        public double MaximumHR { get; set; } = 100; // default max HR value
-        public double MinimumHR { get; set; } = 60; // default min HR value
+        private double _averageSPO2;
+        private double _minSystolicPressure;
+        private double _maxSystolicPressure;
+        private double _minDiastolicPressure;
+        private double _maxDiastolicPressure;
+        private double _biggestO2Desaturation;
+        private double _averageO2Desaturation;
+        private double _maximumHR = 100; // Default maximum heart rate
+        private double _minimumHR = 60; // Default minimum heart rate
 
         // Existing methods
-        public double HeartRate
-        {
-            get { return _heartRate; }
-            set { _heartRate = value; }
-        }
-
-        public double StrokeVolume
-        {
-            get { return _strokeVolume; }
-            set { _strokeVolume = value; }
-        }
-
-        public override void Update(int n)
-        {
-            double beatsSinceLastUpdate = (HeartRate / 60) * (n / 1000.0);
-            _lastBloodPumped = beatsSinceLastUpdate * StrokeVolume;
-        }
-
         public double GetBloodPumped()
         {
             return _lastBloodPumped;
         }
 
+        public override void Update(int n)
+        {
+            double beatsSinceLastUpdate = (_heartRate / 60) * (n / 1000.0);
+            _lastBloodPumped = beatsSinceLastUpdate * _strokeVolume;
+        }
+
         // New method to calculate Heart Rate Variability (HRV)
         public double GetHeartRateVariability()
         {
-            return MaximumHR - MinimumHR;
+            return _maximumHR - _minimumHR;
         }
 
+        // Method to initialize heart parameters
         public void init(Dictionary<string, string> parameters)
         {
-            // Initialize heart parameters here
-            if (parameters.TryGetValue("HeartRate", out var heartRate))
-                HeartRate = double.Parse(heartRate);
-
-            if (parameters.TryGetValue("AverageSPO2", out var averageSPO2))
-                AverageSPO2 = double.Parse(averageSPO2);
-
-            if (parameters.TryGetValue("MinSystolicPressure", out var minSystolicPressure))
-                MinSystolicPressure = double.Parse(minSystolicPressure);
-
-            if (parameters.TryGetValue("MaxSystolicPressure", out var maxSystolicPressure))
-                MaxSystolicPressure = double.Parse(maxSystolicPressure);
-
-            if (parameters.TryGetValue("MinDiastolicPressure", out var minDiastolicPressure))
-                MinDiastolicPressure = double.Parse(minDiastolicPressure);
-
-            if (parameters.TryGetValue("MaxDiastolicPressure", out var maxDiastolicPressure))
-                MaxDiastolicPressure = double.Parse(maxDiastolicPressure);
-
-            if (parameters.TryGetValue("BiggestO2Desaturation", out var biggestO2Desaturation))
-                BiggestO2Desaturation = double.Parse(biggestO2Desaturation);
-
-            if (parameters.TryGetValue("AverageO2Desaturation", out var averageO2Desaturation))
-                AverageO2Desaturation = double.Parse(averageO2Desaturation);
-
-            if (parameters.TryGetValue("MaximumHR", out var maximumHR))
-                MaximumHR = double.Parse(maximumHR);
-
-            if (parameters.TryGetValue("MinimumHR", out var minimumHR))
-                MinimumHR = double.Parse(minimumHR);
+            foreach (var key in parameters.Keys)
+            {
+                if (double.TryParse(parameters[key], NumberStyles.Any, CultureInfo.InvariantCulture, out double parsedValue))
+                {
+                    switch (key)
+                    {
+                        case "HeartRate": _heartRate = parsedValue; break;
+                        case "AverageSPO2": _averageSPO2 = parsedValue; break;
+                            // Add cases for other parameters as needed
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"Invalid input for {key}. Using default value.");
+                }
+            }
         }
-
 
         public void update(int n, Dictionary<string, string> parameters)
         {
-            // Update heart based on simulation step size
-            Update(n); // Use the existing Update method
+            // Update logic for Heart
+        }
+
+        // Calculated properties as methods
+        public double MeanAtrialPressure()
+        {
+            return ((2 * _minDiastolicPressure) + _maxSystolicPressure) / 3;
+        }
+
+        public double PulsePressure()
+        {
+            return _maxSystolicPressure - _minDiastolicPressure;
+        }
+
+        public double AverageBloodPressure()
+        {
+            return _minDiastolicPressure == 0 ? 0 : _maxSystolicPressure / _minDiastolicPressure;
+        }
+
+        public double RatePressureProduct()
+        {
+            return _heartRate * _maxSystolicPressure;
+        }
+
+        public double AverageHR()
+        {
+            return (_maximumHR + _minimumHR) / 2;
+        }
+
+        public double SystolicBloodPressureRange()
+        {
+            return _maxSystolicPressure - _minSystolicPressure;
+        }
+
+        public double DiastolicBloodPressureRange()
+        {
+            return _maxDiastolicPressure - _minDiastolicPressure;
+        }
+
+        public double OxygenSaturationVariability()
+        {
+            return _averageSPO2 - (_averageSPO2 * (_biggestO2Desaturation / 100));
         }
     }
 }

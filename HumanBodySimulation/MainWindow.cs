@@ -13,7 +13,9 @@ namespace HumanBodySimulation
     public partial class MainWindow : Form
     {
         Dictionary<string, string> parameters = new Dictionary<string, string>();
-        List<IOrgan> organs = new List<IOrgan>();    
+        List<IOrgan> organs = new List<IOrgan>();
+        List<Heart> hearts = new List<Heart>();
+        List<Lung> lungs = new List<Lung>();
 
         public MainWindow()
         {
@@ -28,9 +30,11 @@ namespace HumanBodySimulation
             organs.Add(new Lung());
 
             // Added the Heart here
-            organs.Add(new Heart()); 
+            hearts.Add(new Heart());
 
-            foreach(IOrgan organ in organs)
+         
+
+            foreach (IOrgan organ in organs)
             {
                 organ.init(parameters);
             }
